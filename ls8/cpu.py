@@ -5,21 +5,24 @@ import sys
 class CPU:
     """Main CPU class."""
 
-    def __init__(self):
+    def __init__(self): #, ram, register, im, iS, sp, pc, ir, mar, mdr, fl
         """Construct a new CPU."""
-        ram = [0] * 256
-        register = [0] * 8
-        im = 0
-        iS = 0
-        sp = 0
-        register[5] = im
-        register[6] = iS
-        register[7] = sp
-        pc = 0
-        ir = 0
-        mar = 0
-        mdr = 0
-        fl = 0b00000000
+        self.ram = [0] * 256
+        self.register = [0] * 8
+        self.im = 0
+        self.iS = 0
+        self.sp = 0
+        self.register[5] = self.im
+        self.register[6] = self.iS
+        self.register[7] = self.sp
+        self.pc = 0
+        self.ir = 0
+        # self.mar = 0
+        # self.mdr = 0
+        self.fl = 0b00000000
+
+        self.instructions = {}
+        # self.instructions[]
 
     def load(self):
         """Load a program into memory."""
@@ -71,7 +74,15 @@ class CPU:
             print(" %02X" % self.reg[i], end='')
 
         print()
+    
+    def ram_read(self, mar):
+        return self.ram[mar]
 
     def run(self):
         """Run the CPU."""
         pass
+
+cpu = CPU()
+print(cpu.ram[:10])
+cpu.load()
+print(cpu.ram[:10])
