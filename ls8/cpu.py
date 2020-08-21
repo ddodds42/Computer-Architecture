@@ -38,22 +38,21 @@ class CPU:
 
         address = 0
 
-        # For now, we've just hardcoded a program:
+        if len(sys.argv) < 2:
+            raise Exception(
+        'Missing second argument, file name / route, in command line.'
+        )
 
-        program = [
-            # From print8.ls8
-            0b10000010, # LDI R0,8
-            0b00000000,
-            0b00001000,
-            0b01000111, # PRN R0
-            0b00000000,
-            0b00000001, # HLT
-        ]
+        program = sys.argv[1]
 
-        for instruction in program:
-            self.ram[address] = instruction
-            address += 1
-
+        with open(program) as p:
+            for line in p:
+                line = line.split('#')
+                if line[0] == '' or line[0] == '\n':
+                    continue
+                self.ram[address] = int(line[0], 2)
+                address +=1
+        
 
     def alu(self, op, reg_a, reg_b):
         """ALU operations."""
@@ -123,15 +122,3 @@ f'Unknown instruction {ir} at address {self.pc}. Please check ls8-spec.md in the
 
 
 # cpu = CPU()
-# print(cpu.register)
-# cpu.fxn_load_integer(3, 25)
-# cpu.fxn_halt()
-# print(cpu.register, '\n', cpu.pc, '\n', cpu.running)
-
-# print(cpu.ram[:10])
-# cpu.load()
-# print(cpu.ram[:10])
-
-# cpu.ram_write(0b00001001, 0b11111111)
-# print(cpu.ram[:10])
-# print(cpu.ram_read(0b00001001))
