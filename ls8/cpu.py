@@ -8,6 +8,7 @@ PRN = 0b01000111
 MUL = 0b10100010
 PUSH = 0b01000101
 POP = 0b01000110
+CALL = 0b01010000
 
 class CPU:
     """Main CPU class."""
@@ -36,6 +37,7 @@ class CPU:
         self.instructions[MUL] = self.fxn_multiply
         self.instructions[PUSH] = self.fxn_push
         self.instructions[POP] = self.fxn_pop
+        self.instructions[CALL] = self.fxn_call
 
 
     def load(self):
@@ -125,6 +127,9 @@ class CPU:
         self.sp += 1
         self.sp &= 0xff
         self.pc += 2
+    
+    def fxn_call(self, reg, op0):
+        pass
 
     def run(self):
         """Run the CPU."""
