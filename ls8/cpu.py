@@ -4,6 +4,7 @@ import sys
 
 HLT = 0b00000001
 LDI = 0b10000010
+PRN = 0b01000111
 
 class CPU:
     """Main CPU class."""
@@ -28,6 +29,8 @@ class CPU:
         self.instructions = {}
         self.instructions[HLT] = self.fxn_halt
         self.instructions[LDI] = self.fxn_load_integer
+        self.instructions[PRN] = self.fxn_print
+
 
 
     def load(self):
@@ -87,7 +90,7 @@ class CPU:
     def ram_write(self, mar, mdr):
         self.ram[mar] = mdr
     
-    def fxn_halt(self):
+    def fxn_halt(self, op, op0):
         self.running = False
     
     def fxn_load_integer(self, reg, int):
@@ -98,6 +101,10 @@ class CPU:
             raise Exception(
         f'Register {reg} is reserved. Retry with a register value less than 5.'
         )
+    
+    def fxn_print(self, reg, op0):
+        print(self.register[reg])
+        self.pc +=2
 
 
     def run(self):
@@ -115,11 +122,11 @@ f'Unknown instruction {ir} at address {self.pc}. Please check ls8-spec.md in the
                 fxn(operand, operand_0)
 
 
-cpu = CPU()
-print(cpu.register)
-cpu.fxn_load_integer(3, 25)
-cpu.fxn_halt()
-print(cpu.register, '\n', cpu.pc, '\n', cpu.running)
+# cpu = CPU()
+# print(cpu.register)
+# cpu.fxn_load_integer(3, 25)
+# cpu.fxn_halt()
+# print(cpu.register, '\n', cpu.pc, '\n', cpu.running)
 
 # print(cpu.ram[:10])
 # cpu.load()
