@@ -5,6 +5,9 @@ import sys
 HLT = 0b00000001
 LDI = 0b10000010
 PRN = 0b01000111
+MUL = 0b10100010
+PUSH = 0b01000101
+POP = 0b01000110
 
 class CPU:
     """Main CPU class."""
@@ -15,7 +18,7 @@ class CPU:
         self.register = [0] * 8
         self.im = 0
         self.iS = 0
-        self.sp = 0
+        self.sp = 0xf4
         self.register[5] = self.im
         self.register[6] = self.iS
         self.register[7] = self.sp
@@ -30,7 +33,9 @@ class CPU:
         self.instructions[HLT] = self.fxn_halt
         self.instructions[LDI] = self.fxn_load_integer
         self.instructions[PRN] = self.fxn_print
-
+        self.instructions[MUL] = self.fxn_multiply
+        self.instructions[PUSH] = self.fxn_push
+        self.instructions[POP] = self.fxn_pop
 
 
     def load(self):
@@ -105,6 +110,21 @@ class CPU:
         print(self.register[reg])
         self.pc +=2
 
+    def fxn_multiply(self, int, multiplicand):
+        self.register[int] *= self.register[multiplicand]
+        self.pc +=3
+    
+    def fxn_push(self, reg, op0):
+        self.sp -= 1
+        self.sp &= 0xff
+        self.ram[self.sp] = self.register[reg]
+        self.pc += 2
+    
+    def fxn_pop(self, reg, op0):
+        self.register[reg] = self.ram[self.sp]
+        self.sp += 1
+        self.sp &= 0xff
+        self.pc += 2
 
     def run(self):
         """Run the CPU."""
@@ -122,3 +142,4 @@ f'Unknown instruction {ir} at address {self.pc}. Please check ls8-spec.md in the
 
 
 # cpu = CPU()
+# print(cpu.register)
