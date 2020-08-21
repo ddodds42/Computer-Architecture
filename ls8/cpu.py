@@ -2,6 +2,9 @@
 
 import sys
 
+HLT = 0b00000001
+LDI = 0b10000010
+
 class CPU:
     """Main CPU class."""
 
@@ -15,14 +18,17 @@ class CPU:
         self.register[5] = self.im
         self.register[6] = self.iS
         self.register[7] = self.sp
+        self.running = True
         self.pc = 0
-        self.ir = 0
+        # self.ir = 0
         # self.mar = 0
         # self.mdr = 0
-        self.fl = 0b00000000
+        self.fl = None
 
         self.instructions = {}
-        # self.instructions[]
+        self.instructions[HLT] = self.fxn_halt
+        self.instructions[LDI] = self.fxn_load_integer
+
 
     def load(self):
         """Load a program into memory."""
@@ -80,15 +86,45 @@ class CPU:
 
     def ram_write(self, mar, mdr):
         self.ram[mar] = mdr
+    
+    def fxn_halt(self):
+        self.running = False
+    
+    def fxn_load_integer(self, reg, int):
+        if reg < 5:
+            self.register[reg] = int
+            self.pc += 3
+        else:
+            raise Exception(
+        f'Register {reg} is reserved. Retry with a register value less than 5.'
+        )
+
 
     def run(self):
         """Run the CPU."""
-        pass
+        while self.running:
+            ir = self.ram_read(self.pc)
+            operand = self.ram_read(self.pc + 1)
+            operand_0 = self.ram_read(self.pc + 2)
+            if ir not in self.instructions:
+                raise Exception(
+f'Unknown instruction {ir} at address {self.pc}. Please check ls8-spec.md in the ls8 repo.'
+)
+            else:
+                fxn = self.instructions[ir]
+                fxn(operand, operand_0)
+
 
 cpu = CPU()
-print(cpu.ram[:10])
-cpu.load()
-print(cpu.ram[:10])
-cpu.ram_write(0b00001001, 0b11111111)
-print(cpu.ram[:10])
-print(cpu.ram_read(0b00001001))
+print(cpu.register)
+cpu.fxn_load_integer(3, 25)
+cpu.fxn_halt()
+print(cpu.register, '\n', cpu.pc, '\n', cpu.running)
+
+# print(cpu.ram[:10])
+# cpu.load()
+# print(cpu.ram[:10])
+
+# cpu.ram_write(0b00001001, 0b11111111)
+# print(cpu.ram[:10])
+# print(cpu.ram_read(0b00001001))
