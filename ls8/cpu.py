@@ -9,6 +9,8 @@ MUL = 0b10100010
 PUSH = 0b01000101
 POP = 0b01000110
 CALL = 0b01010000
+ADD = 0b10100000
+RET = 0b00010001
 
 class CPU:
     """Main CPU class."""
@@ -38,6 +40,8 @@ class CPU:
         self.instructions[PUSH] = self.fxn_push
         self.instructions[POP] = self.fxn_pop
         self.instructions[CALL] = self.fxn_call
+        self.instructions[ADD] = self.fxn_add
+        self.instructions[RET] = self.fxn_return
 
 
     def load(self):
@@ -65,7 +69,7 @@ class CPU:
         """ALU operations."""
 
         if op == "ADD":
-            self.reg[reg_a] += self.reg[reg_b]
+            self.register[reg_a] += self.register[reg_b]
         #elif op == "SUB": etc
         else:
             raise Exception("Unsupported ALU operation")
@@ -86,10 +90,14 @@ class CPU:
         ), end='')
 
         for i in range(8):
-            print(" %02X" % self.reg[i], end='')
+            print(" %02X" % self.register[i], end='')
 
         print()
     
+    def fxn_add(self, reg, op0):
+        self.alu('ADD', reg, op0)
+        self.pc += 3
+
     def ram_read(self, mar):
         return self.ram[mar]
 
@@ -129,7 +137,15 @@ class CPU:
         self.pc += 2
     
     def fxn_call(self, reg, op0):
-        pass
+        rcount = self.pc + 2
+        self.sp -= 1
+        self.ram[self.sp] = rcount
+        self.pc = self.register[reg]
+    
+    def fxn_return (self, op, op0):
+        return_address = self.ram[self.sp]
+        self.pc = return_address
+        self.sp += 1
 
     def run(self):
         """Run the CPU."""
